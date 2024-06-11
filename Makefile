@@ -7,4 +7,4 @@ lint:
 
 test:
 	make lint
-	pytest tests
+	pytest
