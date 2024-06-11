@@ -1,5 +1,5 @@
 import os
-from flask import (
+from flask import (  # type: ignore
     Flask,
     render_template)
 
