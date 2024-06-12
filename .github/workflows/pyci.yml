@@ -19,11 +19,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
         # make depends on poetry
       - name: Install dependencies
-        env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           pip install poetry
           poetry install
       - name: Run linter and pytest
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           make test
