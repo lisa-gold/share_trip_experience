@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 from flask import (
     Flask,
     render_template,
@@ -7,26 +6,14 @@ from flask import (
     request,
     flash,
     redirect)
-from pymongo import MongoClient
+from share_trip_experience.db import get_db
 
-
-load_dotenv()
-
-
-USERNAME = os.getenv("USERNAME")
-PASSWORD = os.getenv("PASSWORD")
-DB = os.getenv("DB")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 
-try:
-    # todo: test mode
-    cluster = MongoClient(f"mongodb+srv://{USERNAME}:{PASSWORD}@{DB}")
-    db = cluster['trip-share']
-except Exception as e:
-    print('no connection with the db ', e)
+app.config["DB"] = get_db()
 
 
 @app.route('/')
@@ -46,7 +33,7 @@ def add_user():
         'name': request.form['name'],
         'password': request.form['password']
     }
-    db['users'].insert_one(user)
+    app.config["DB"]['users'].insert_one(user)
     flash('User is added successfully', 'alert alert-success')
     return redirect(url_for('get_my_trips'), code=302)
 
