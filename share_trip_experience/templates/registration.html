@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block main %}
+
+<div class="card" style="width: 50vw;">
+    <form action="{{ url_for('add_user') }}" method="post">
+        <label for="name">Name
+            <input required type="text" name="name" id="name" placeholder="your name">
+        </label>
+        <label for="password">Password
+            <input required type="text" name="password" id="password" placeholder="your password">
+        </label>
+
+        <input type="submit" class="btn btn-primary" value="Sign up">
+
+    </form>
+</div>
+
+{% endblock %}
