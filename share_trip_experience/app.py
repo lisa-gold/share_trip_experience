@@ -6,7 +6,7 @@ from flask import (
     request,
     flash,
     redirect)
-from share_trip_experience.db import get_db
+from share_trip_experience.db import get_db, validate_new_user
 
 
 app = Flask(__name__)
@@ -28,11 +28,15 @@ def registration_form():
 
 @app.post('/registration')
 def add_user():
-    # todo validation (unique, password length, etc.), encryption
+    # todo encryption
     user = {
         'name': request.form['name'],
         'password': request.form['password']
     }
+    is_validated, message = validate_new_user(app.config["DB"], user)
+    if not is_validated:
+        flash(message, 'alert alert-danger')
+        return render_template('registration.html')
     app.config["DB"]['users'].insert_one(user)
     flash('User is added successfully', 'alert alert-success')
     return redirect(url_for('get_my_trips'), code=302)

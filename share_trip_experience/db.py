@@ -21,3 +21,16 @@ def get_db(test_mode=False):
         return db
     except Exception as e:
         print('no connection with the db ', e)
+
+
+def validate_new_user(db, user):
+    is_validated = True
+    message = ''
+    if db['users'].find_one({"name": user['name']}):
+        message = f'This user ({user["name"]}) is already registered'
+        is_validated = False
+    if len(user['password']) < 4:
+        message = 'The password is too short.\
+            It has to be at least 4 characters'
+        is_validated = False
+    return is_validated, message

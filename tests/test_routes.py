@@ -23,7 +23,7 @@ def test_post_registration():
     app.config.update({"TESTING": True, "DB": db_test})
     new_user = {
         'name': now,
-        'password': '123'
+        'password': '1234'
     }
     response = app.test_client().post('/registration', data={
         'name': new_user['name'],
@@ -37,4 +37,22 @@ def test_post_registration():
     assert user_added is not None
     assert user_added['password'] == new_user['password']
 
+    users_number_before = db_test['users'].count_documents({})
+
+    response_failed_unique = app.test_client().post('/registration', data={
+        'name': new_user['name'],
+        'password': '44444'}, follow_redirects=True)
+
+    users_number_after = db_test['users'].count_documents({})
+
+    assert 'is already registered' in response_failed_unique.text
+    assert users_number_before == users_number_after
+
     db_test['users'].delete_one({"name": now})
+
+    response_failed_password = app.test_client().post('/registration', data={
+        'name': 'some_name',
+        'password': '123'}, follow_redirects=True)
+
+    assert 'The password is too short' in response_failed_password.text
+    assert db_test['users'].find_one({"name": 'some_name'}) is None
