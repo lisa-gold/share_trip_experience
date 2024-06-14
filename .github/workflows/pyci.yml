@@ -11,13 +11,13 @@ jobs:
       matrix:
         # we want to test our package on several versions of Python
         python-version: ['3.9', '3.10']
+      secrets: inherit
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-        secrets: inherit
         # make depends on poetry
       - name: Install dependencies
         run: |
