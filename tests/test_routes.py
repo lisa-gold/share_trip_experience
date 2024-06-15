@@ -104,3 +104,33 @@ def test_get_my_trips():
 
         assert response.status_code == 200
         assert 'My trips' in response.text
+        assert 'Japan' in response.text
+
+
+def test_post_my_trips():
+    app.test_client().post('/logout')
+    response_error = app.test_client().post('/my_trips', follow_redirects=True)
+    assert 'Log in to open the page' in response_error.text
+
+    db_test = get_db(test_mode=True)
+    user_existing = db_test['users'].find_one({"name": '1718441680.747165'})
+    with app.test_client() as client:
+        client.post('/login',
+                    data={'name': user_existing['name'],
+                          'password': user_existing['password']},
+                    follow_redirects=True)
+
+        old_trips = db_test['users'].find_one({
+            "name": user_existing['name']}).get('trips')
+
+        response = client.post('/my_trips',
+                               data={'country': 'Madagascar',
+                                     'city': 'Antananarivo',
+                                     'year-month': '2024-01',
+                                     'rating': 6},
+                               follow_redirects=True)
+
+        assert 'Madagascar' in response.text
+
+        db_test['users'].update_one({"name": user_existing['name']},
+                                    {"$set": {'trips': old_trips}})

@@ -1,14 +1,82 @@
 {% extends "layout.html" %}
 {% block main %}
 
+<a href="#form_new_trip" class="btn btn-primary">Add a new trip</a>
+
 <h3>My trips</h3>
 <div class="card p-4" style="width: 50vw;">
     <h4 class="card-title">Stats</h4>
 </div>
+
 <ol>
     {% for trip in trips %}
     <li>{{ trip }}</li>
     {% endfor %}
 </ol>
+
+<form action="{{ url_for('add_trip') }}" method="post" id="form_new_trip" class="card p-2">
+    <label for="country" class="">Country
+        <input type="text" name="country" id="country" placeholder="Country">
+    </label>
+
+    <br>
+
+    <label for="city">City
+        <input type="text" name="city" id="city" placeholder="City">
+    </label>
+
+    <br>
+
+    <label for="year-month">Year and month
+        <input type="month" name="year-month" id="year-month">
+    </label>
+
+    <br>
+
+    <div class="" id="places-list">
+        <label for="place" class="">Place</label>
+        <input type="text" name="place1" id="place" class="w-50">
+        <button class="btn btn-outline-primary w-25" type="button" onclick="addBlock('places-list', 'Place')">+</button>
+    </div>
+    
+    <br>
+
+    <div class="" id="food-list">
+        <label for="food" class="">Food</label>
+        <input type="text" name="food1" id="food" class="w-50">
+        <button class="btn btn-outline-primary w-25" type="button" onclick="addBlock('food-list', 'Food')">+</button>
+    </div>
+    
+    <br>
+
+    <label for="rating">Rating (1-awful, 10-excellent)
+        <input type="number" name="rating" id="rating" min="1" max="10">
+    </label>
+
+    <br>
+
+    <input type="submit" class="btn btn-primary w-25" value="Add trip">
+
+</form>
+<script>
+    function addBlock(element, text) {
+        div = document.createElement('div');
+            parent_div = document.getElementById(element);
+
+            label = document.createElement('label');
+            label.innerText = text;
+
+            input = document.createElement('input');
+            input.type = 'text'
+            input.name = text.toLowerCase() + (parent_div.childElementCount - 1);
+            input.className = 'w-50 ms-1'
+
+            div.appendChild(label);
+            div.appendChild(input);
+
+            parent_div.appendChild(div);
+    }
+</script>
+
 
 {% endblock %}

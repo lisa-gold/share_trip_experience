@@ -7,7 +7,7 @@ from flask import (
     flash,
     redirect)
 from share_trip_experience.db import get_db, validate_new_user
-from share_trip_experience.models import User
+from share_trip_experience.models import User, Trip
 from flask_login import (
     LoginManager,
     login_user,
@@ -93,3 +93,37 @@ def get_my_trips():
     user = app.config["DB"]['users'].find_one({"name": name})
     trips = user.get('trips') or []
     return render_template('my_trips.html', trips=trips)
+
+
+@app.post('/my_trips')
+def add_trip():
+    if not current_user.is_authenticated:
+        flash('Log in to open the page', 'alert alert-warning')
+        return redirect(url_for('login_form'), code=302)
+    places = []
+    food = []
+    for i in range(1, 11):
+        if request.form.get(f'place{i}'):
+            places.append(request.form[f'place{i}'])
+        if request.form.get(f'food{i}'):
+            food.append(request.form[f'food{i}'])
+
+    trip = Trip(
+        request.form['country'],
+        request.form['city'],
+        request.form['year-month'][:4],
+        request.form['year-month'][5:],
+        places,
+        food,
+        request.form['rating'],
+    )
+    user = app.config["DB"]['users'].find_one({"name": current_user.name})
+    trips_updated = []
+    if user.get('trips'):
+        trips_updated = user.get('trips') + [trip.__dict__]
+    else:
+        trips_updated = [trip.__dict__]
+    app.config["DB"]['users'].update_one({"name": current_user.name},
+                                         {"$set": {'trips': trips_updated}})
+    flash('Your new trip is added successfully', 'alert alert-success')
+    return redirect(url_for('get_my_trips'), code=302)
