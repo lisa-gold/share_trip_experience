@@ -2,5 +2,13 @@
 {% block main %}
 
 <h3>My trips</h3>
+<div class="card p-4" style="width: 50vw;">
+    <h4 class="card-title">Stats</h4>
+</div>
+<ol>
+    {% for trip in trips %}
+    <li>{{ trip }}</li>
+    {% endfor %}
+</ol>
 
 {% endblock %}

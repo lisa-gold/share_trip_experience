@@ -26,10 +26,10 @@ def get_db(test_mode=False):
 def validate_new_user(db, user):
     is_validated = True
     message = ''
-    if db['users'].find_one({"name": user['name']}):
-        message = f'This user ({user["name"]}) is already registered'
+    if db['users'].find_one({"name": user.name}):
+        message = f'This user ({user.name}) is already registered'
         is_validated = False
-    if len(user['password']) < 4:
+    if len(user.password) < 4:
         message = 'The password is too short.\
             It has to be at least 4 characters'
         is_validated = False

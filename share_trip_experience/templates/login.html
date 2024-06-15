@@ -2,7 +2,7 @@
 {% block main %}
 
 <div class="card p-4" style="width: 50vw;">
-    <form action="{{ url_for('add_user') }}" method="post">
+    <form action="{{ url_for('login') }}" method="post">
         <label for="name">Name
             <input required type="text" name="name" id="name" placeholder="your name">
         </label>
@@ -14,7 +14,7 @@
 
         <br>
 
-        <input type="submit" class="btn btn-primary" value="Sign up">
+        <input type="submit" class="btn btn-primary" value="Sign in">
 
     </form>
 </div>
