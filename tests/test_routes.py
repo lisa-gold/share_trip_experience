@@ -134,3 +134,44 @@ def test_post_my_trips():
 
         db_test['users'].update_one({"name": user_existing['name']},
                                     {"$set": {'trips': old_trips}})
+
+
+def test_delete_trip():
+    app.test_client().post('/logout')
+    response_error = app.test_client().post('/my_trips', follow_redirects=True)
+    assert 'Log in to open the page' in response_error.text
+
+    db_test = get_db(test_mode=True)
+    user_existing = db_test['users'].find_one({"name": '1718441680.747165'})
+    with app.test_client() as client:
+        client.post('/login',
+                    data={'name': user_existing['name'],
+                          'password': user_existing['password']},
+                    follow_redirects=True)
+
+        trip_to_delete = {'country': 'Madagascar',
+                          'city': 'Antananarivo',
+                          'year-month': '2024-01',
+                          'rating': 6}
+
+        # add trip that will be deleted
+        client.post('/my_trips',
+                    data=trip_to_delete,
+                    follow_redirects=True)
+
+        existing_trips = db_test['users'].find_one({
+            "name": user_existing['name']}).get('trips')
+
+        number_of_trips = len(existing_trips)  # 2
+
+        response = client.post(f'/my_trips/{number_of_trips - 1}/delete',
+                               follow_redirects=True)
+
+        existing_trips_after = db_test['users'].find_one({
+            "name": user_existing['name']}).get('trips')
+
+        number_of_trips_after = len(existing_trips_after)
+
+        assert 'Trip is deleted successfully' in response.text
+        assert number_of_trips_after == number_of_trips - 1
+        assert existing_trips[:-1] == existing_trips_after

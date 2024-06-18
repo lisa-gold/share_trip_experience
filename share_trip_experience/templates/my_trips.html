@@ -10,7 +10,34 @@
 
 <ol>
     {% for trip in trips %}
-    <li>{{ trip }}</li>
+    <li>
+        <div class="card p-2" style="width: 50vw;">
+            <h5 class="card-title">{{ trip.country }} {{ trip.city }}</h5>
+            <p class="card-text">{{ trip.year }} {{ trip.month }}</p>
+            <div class="d-flex">
+            
+                <ul class="w-100">
+                    <h6 class="card-title">Places</h6>
+                    {% for place in trip.places %}
+                    <li>{{ place }}</li>
+                    {% endfor %}
+                </ul>
+                
+                <ul class="w-100">
+                    <h6 class="card-title">Food</h6>
+                    {% for food_piece in trip.food %}
+                    <li>{{ food_piece }}</li>
+                    {% endfor %}
+                </ul>
+        
+            </div>
+
+        <form action="{{ url_for('delete_trip', trip_index=trips.index(trip)) }}" method="post">
+            <input type="submit" class="btn btn-danger w-25" value="Delete trip">
+        </form>
+
+        </div>
+    </li>
     {% endfor %}
 </ol>
 
@@ -60,7 +87,8 @@
 </form>
 <script>
     function addBlock(element, text) {
-        div = document.createElement('div');
+        if (parent_div.childElementCount < 11) {
+            div = document.createElement('div');
             parent_div = document.getElementById(element);
 
             label = document.createElement('label');
@@ -75,6 +103,7 @@
             div.appendChild(input);
 
             parent_div.appendChild(div);
+        }
     }
 </script>
 

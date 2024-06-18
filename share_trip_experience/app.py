@@ -127,3 +127,18 @@ def add_trip():
                                          {"$set": {'trips': trips_updated}})
     flash('Your new trip is added successfully', 'alert alert-success')
     return redirect(url_for('get_my_trips'), code=302)
+
+
+@app.post('/my_trips/<trip_index>/delete')
+def delete_trip(trip_index):
+    if not current_user.is_authenticated:
+        flash('Log in to open the page', 'alert alert-warning')
+        return redirect(url_for('login_form'), code=302)
+    user = app.config["DB"]['users'].find_one({"name": current_user.name})
+    trips_updated = user.get('trips')
+    trips_updated.pop(int(trip_index))
+
+    app.config["DB"]['users'].update_one({"name": current_user.name},
+                                         {"$set": {'trips': trips_updated}})
+    flash('Trip is deleted successfully', 'alert alert-success')
+    return redirect(url_for('get_my_trips'), code=302)
