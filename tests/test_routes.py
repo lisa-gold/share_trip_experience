@@ -175,3 +175,77 @@ def test_delete_trip():
         assert 'Trip is deleted successfully' in response.text
         assert number_of_trips_after == number_of_trips - 1
         assert existing_trips[:-1] == existing_trips_after
+
+
+def test_edit_trip_form():
+    app.test_client().post('/logout')
+    response_error = app.test_client().post('/my_trips', follow_redirects=True)
+    assert 'Log in to open the page' in response_error.text
+
+    db_test = get_db(test_mode=True)
+    user_existing = db_test['users'].find_one({"name": '1718441680.747165'})
+    with app.test_client() as client:
+        client.post('/login',
+                    data={'name': user_existing['name'],
+                          'password': user_existing['password']},
+                    follow_redirects=True)
+        response = client.get('/my_trips/0/edit')
+
+        assert 'Update trip' in response.text
+        assert 'Japan' in response.text
+
+
+def test_edit_trip():
+    app.test_client().post('/logout')
+    response_error = app.test_client().post('/my_trips',
+                                            follow_redirects=True)
+    assert 'Log in to open the page' in response_error.text
+
+    db_test = get_db(test_mode=True)
+    user_existing = db_test['users'].find_one({"name": '1718441680.747165'})
+    with app.test_client() as client:
+        client.post('/login',
+                    data={'name': user_existing['name'],
+                          'password': user_existing['password']},
+                    follow_redirects=True)
+
+        trip_to_update = {'country': 'Madagascar',
+                          'city': 'Antananarivo',
+                          'year-month': '2024-01',
+                          'places': ['Ocean', 'City'],
+                          'rating': 6}
+
+        # add trip that will be updated
+        client.post('/my_trips',
+                    data=trip_to_update,
+                    follow_redirects=True)
+
+        existing_trips = db_test['users'].find_one({
+            "name": user_existing['name']}).get('trips')
+
+        number_of_trips = len(existing_trips)  # 2
+
+        trip_updated = {'country': 'Madagascar',
+                        'city': 'Antananarivo',
+                        'year-month': '2024-03',
+                        'place1': 'Safari',
+                        'rating': '8'}
+
+        response = client.post(f'/my_trips/{number_of_trips - 1}/edit',
+                               data=trip_updated,
+                               follow_redirects=True)
+
+        trips_after = db_test['users'].find_one({
+            "name": user_existing['name']}).get('trips')
+
+        number_of_trips_after = len(trips_after)
+
+        assert 'Trip is edited successfully' in response.text
+        assert number_of_trips_after == number_of_trips
+        assert trip_updated.get('rating') == trips_after[-1].get('rating')
+        assert trips_after[-1].get('month') == '03'
+        assert 'Safari' in trips_after[-1].get('places')
+        assert 'City' not in trips_after[-1].get('places')
+
+        db_test['users'].update_one({"name": user_existing['name']},
+                                    {"$set": {'trips': trips_after[0]}})

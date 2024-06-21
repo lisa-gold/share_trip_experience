@@ -142,3 +142,48 @@ def delete_trip(trip_index):
                                          {"$set": {'trips': trips_updated}})
     flash('Trip is deleted successfully', 'alert alert-success')
     return redirect(url_for('get_my_trips'), code=302)
+
+
+@app.get('/my_trips/<trip_index>/edit')
+def edit_trip_form(trip_index):
+    if not current_user.is_authenticated:
+        flash('Log in to open the page', 'alert alert-warning')
+        return redirect(url_for('login_form'), code=302)
+    user = app.config["DB"]['users'].find_one({"name": current_user.name})
+    trip_to_updated = user.get('trips')[int(trip_index)]
+    return render_template('edit_trip.html',
+                           trip=trip_to_updated,
+                           trip_index=trip_index)
+
+
+@app.post('/my_trips/<trip_index>/edit')
+def edit_trip(trip_index):
+    if not current_user.is_authenticated:
+        flash('Log in to open the page', 'alert alert-warning')
+        return redirect(url_for('login_form'), code=302)
+    user = app.config["DB"]['users'].find_one({"name": current_user.name})
+    trips_updated = user.get('trips')
+    trips_updated.pop(int(trip_index))
+    places = []
+    food = []
+    for i in range(1, 11):
+        if request.form.get(f'place{i}'):
+            places.append(request.form[f'place{i}'])
+        if request.form.get(f'food{i}'):
+            food.append(request.form[f'food{i}'])
+
+    trip_updated = Trip(
+        request.form['country'],
+        request.form['city'],
+        request.form['year-month'][:4],
+        request.form['year-month'][5:],
+        places,
+        food,
+        request.form['rating'],
+    )
+    trips_updated.insert(int(trip_index), trip_updated.__dict__)
+
+    app.config["DB"]['users'].update_one({"name": current_user.name},
+                                         {"$set": {'trips': trips_updated}})
+    flash('Trip is edited successfully', 'alert alert-success')
+    return redirect(url_for('get_my_trips'), code=302)

@@ -11,9 +11,9 @@
 <ol>
     {% for trip in trips %}
     <li>
-        <div class="card p-2" style="width: 50vw;">
+        <div class="card p-2 m-2" style="width: 50vw;">
             <h5 class="card-title">{{ trip.country }} {{ trip.city }}</h5>
-            <p class="card-text">{{ trip.year }} {{ trip.month }}</p>
+            <p class="card-text">{{ trip.year }}-{{ trip.month }}</p>
             <div class="d-flex">
             
                 <ul class="w-100">
@@ -32,9 +32,15 @@
         
             </div>
 
-        <form action="{{ url_for('delete_trip', trip_index=trips.index(trip)) }}" method="post">
-            <input type="submit" class="btn btn-danger w-25" value="Delete trip">
-        </form>
+            <div class="d-flex">
+                <a href="{{ url_for('edit_trip_form', trip_index=trips.index(trip)) }}" class="btn btn-warning w-25 mx-2">Edit trip</a>
+
+                <form action="{{ url_for('delete_trip', trip_index=trips.index(trip)) }}" method="post">
+                    <input type="submit" class="btn btn-danger w-100" value="Delete">
+                </form>
+            </div>
+
+        
 
         </div>
     </li>
@@ -87,9 +93,9 @@
 </form>
 <script>
     function addBlock(element, text) {
+        parent_div = document.getElementById(element);
         if (parent_div.childElementCount < 11) {
             div = document.createElement('div');
-            parent_div = document.getElementById(element);
 
             label = document.createElement('label');
             label.innerText = text;
@@ -97,7 +103,7 @@
             input = document.createElement('input');
             input.type = 'text'
             input.name = text.toLowerCase() + (parent_div.childElementCount - 1);
-            input.className = 'w-50 ms-1'
+            input.className = 'w-50 m-1'
 
             div.appendChild(label);
             div.appendChild(input);

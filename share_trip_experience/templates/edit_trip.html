@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block main %}
+
+<form action="{{ url_for('edit_trip', trip_index=trip_index) }}" method="post" id="form_edit_trip" class="card p-2">
+    <label for="country" class="">Country
+        <input type="text" name="country" id="country" placeholder="Country" value="{{ trip.country }}">
+    </label>
+
+    <br>
+
+    <label for="city">City
+        <input type="text" name="city" id="city" placeholder="City" value="{{ trip.city }}">
+    </label>
+
+    <br>
+
+    <label for="year-month">Year and month
+        <input type="month" name="year-month" id="year-month" value="{{ trip.year }}-{{ trip.month }}">
+    </label>
+
+    <br>
+
+    <div class="" id="places-list">
+
+        <label for="place" class="">Place</label>
+        <input type="text" name="place1" id="place" class="w-50" value="{{ trip.get('places', [''])[0] }}">
+        <button class="btn btn-outline-primary w-25" type="button" onclick="addBlock('places-list', 'Place')">+</button>
+
+        {% for i in range(1, (trip.places|length)|default(1)) %}
+        <label for="place" class="">Place</label>
+        <input type="text" name="f'place{trip.places[i]}'" id="place" class="w-50" value="{{ trip.places[i] }}">
+        {% endfor %}
+    </div>
+    
+    <br>
+
+    <div class="" id="food-list">
+        <label for="food" class="">Food</label>
+        <input type="text" name="food1" id="food" class="w-50" value="{{ trip.get('food', [''])[0] }}">
+        <button class="btn btn-outline-primary w-25" type="button" onclick="addBlock('food-list', 'Food')">+</button>
+    
+        {% for i in range(1, (trip.food|length)|default(1)) %}
+        <label for="place" class="">Place</label>
+        <input type="text" name="f'place{trip.food[i]}'" id="place" class="w-50" value="{{ trip.food[i] }}">
+        {% endfor %}
+    </div>
+    
+    <br>
+
+    <label for="rating">Rating (1-awful, 10-excellent)
+        <input type="number" name="rating" id="rating" min="1" max="10" value="{{ trip.rating }}">
+    </label>
+
+    <br>
+
+    <div class="d-flex">
+    <input type="submit" class="btn btn-primary w-25 mx-2" value="Update trip">
+    <a href="{{ url_for('get_my_trips') }}" class="btn btn-warning w-25">Cancel</a>
+    </div>
+
+</form>
+<script>
+    function addBlock(element, text) {
+        parent_div = document.getElementById(element);
+        if (parent_div.childElementCount < 11) {
+            div = document.createElement('div');
+
+            label = document.createElement('label');
+            label.innerText = text;
+
+            input = document.createElement('input');
+            input.type = 'text'
+            input.name = text.toLowerCase() + (parent_div.childElementCount - 1);
+            input.className = 'w-50 m-1'
+
+            div.appendChild(label);
+            div.appendChild(input);
+
+            parent_div.appendChild(div);
+        }
+    }
+</script>
+
+
+{% endblock %}
