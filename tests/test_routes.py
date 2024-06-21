@@ -248,4 +248,4 @@ def test_edit_trip():
         assert 'City' not in trips_after[-1].get('places')
 
         db_test['users'].update_one({"name": user_existing['name']},
-                                    {"$set": {'trips': trips_after[0]}})
+                                    {"$set": {'trips': [trips_after[0]]}})
