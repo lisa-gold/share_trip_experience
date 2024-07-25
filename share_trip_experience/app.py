@@ -187,3 +187,19 @@ def edit_trip(trip_index):
                                          {"$set": {'trips': trips_updated}})
     flash('Trip is edited successfully', 'alert alert-success')
     return redirect(url_for('get_my_trips'), code=302)
+
+
+@app.get('/users')
+def get_users():
+    users = app.config["DB"]['users'].find({}).sort("trips", -1)
+    return render_template('users.html',
+                           users=users)
+
+
+@app.get('/users/<name>')
+def get_user(name):
+    user = app.config["DB"]['users'].find_one({"name": name})
+    if current_user.is_authenticated and current_user.name == name:
+        return render_template('my_trips.html', trips=user.get('trips', []))
+    return render_template('users_trips.html',
+                           user=user)

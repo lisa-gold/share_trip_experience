@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block main %}
+
+<div class="card" style="width: 50vw;">
+    <div class="card-body">
+        <h2 class="card-title">Our users</h2>
+        <ol> 
+            {% for user in users %}
+            <li><a href="{{ url_for('get_user', name=user.name) }}">{{ user.name }}</a></li>
+            <p>total trips: {{ user.trips|length }}</p>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+
+{% endblock %}

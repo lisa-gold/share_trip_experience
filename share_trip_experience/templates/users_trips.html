@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block main %}
+
+<h3>{{ user.name }}'s trips</h3>
+<div class="card p-4" style="width: 50vw;">
+    <h4 class="card-title">Stats</h4>
+    <div class="d-flex">
+            
+        <ul class="w-100">
+            <p class="card-text">Total trips: <b>{{ user.trips|length }}</b></p>
+            <p class="card-text">Countries visited: <b>todo</b></p>
+        </ul>
+        
+        <ul class="w-100">
+            <p class="card-text">Cities visited: <b>todo</b></p>
+        </ul>
+
+    </div>
+</div>
+
+<ol>
+    {% for trip in user.trips %}
+    <li>
+        <div class="card p-2 m-2" style="width: 50vw;">
+            <h5 class="card-title">{{ trip.country }} {{ trip.city }}</h5>
+            <p class="card-text">{{ trip.year }}-{{ trip.month }}</p>
+            <div class="d-flex">
+            
+                <ul class="w-100">
+                    <h6 class="card-title">Places</h6>
+                    {% for place in trip.places %}
+                    <li>{{ place }}</li>
+                    {% endfor %}
+                </ul>
+                
+                <ul class="w-100">
+                    <h6 class="card-title">Food</h6>
+                    {% for food_piece in trip.food %}
+                    <li>{{ food_piece }}</li>
+                    {% endfor %}
+                </ul>
+        
+            </div>
+
+        </div>
+    </li>
+    {% endfor %}
+</ol>
+
+{% endblock %}
