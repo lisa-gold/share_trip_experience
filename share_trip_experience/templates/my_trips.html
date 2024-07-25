@@ -10,11 +10,20 @@
             
         <ul class="w-100">
             <p class="card-text">Total trips: <b>{{ trips|length }}</b></p>
-            <p class="card-text">Countries visited: <b>todo</b></p>
+            <p class="card-text">Countries visited: <b>{{ trips|map(attribute='country')|unique|list|length }}</b></p>
         </ul>
         
         <ul class="w-100">
-            <p class="card-text">Cities visited: <b>todo</b></p>
+            <p class="card-text">Cities visited: <b>
+                {% set cities = [] %}
+                {% for trip in trips %}
+                {% if not (trip.country, trip.city) in cities %}
+                {{ cities.append((trip.country, trip.city)) or "" }}
+                {% endif %}
+                {% endfor %}
+
+                {{ cities|length }}
+            </b></p>
         </ul>
 
     </div>

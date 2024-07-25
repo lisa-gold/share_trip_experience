@@ -191,7 +191,9 @@ def edit_trip(trip_index):
 
 @app.get('/users')
 def get_users():
-    users = app.config["DB"]['users'].find({}).sort("trips", -1)
+    users = app.config["DB"]['users'].find({})
+    users = list(users)
+    users.sort(key=lambda user: len(user.get('trips', [])), reverse=True)
     return render_template('users.html',
                            users=users)
 
